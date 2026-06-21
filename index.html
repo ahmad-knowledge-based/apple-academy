@@ -269,9 +269,20 @@
         <div class="meta-cell"><div class="k">Programming</div><div class="v">15 soal</div></div>
       </div>
       <div class="field">
+        <label for="levelSelect">Tingkat kesulitan</label>
+        <select id="levelSelect">
+          <option value="all">Semua tingkat (campur)</option>
+          <option value="pemula">Pemula — soal mudah</option>
+          <option value="menengah">Menengah — mudah &amp; sedang</option>
+          <option value="mahir">Mahir — sedang &amp; sulit</option>
+          <option value="ahli">Ahli — hanya soal sulit</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="modeSelect">Mode latihan</label>
         <select id="modeSelect"></select>
       </div>
+      <p class="sub" id="sessionInfo" style="font-size:13px;margin:-6px auto 20px"></p>
       <button class="btn primary" id="startBtn" style="min-width:220px">Mulai Simulasi</button>
     </section>
 
@@ -2764,6 +2775,496 @@ const QUESTIONS = /*QUESTIONS_START*/[
     "hint": "Berbeda dari overriding yang melibatkan parent-child.",
     "explanation": "Method overloading: nama method sama tetapi parameter berbeda — salah satu bentuk polymorphism.",
     "difficulty": "hard"
+  },
+  {
+    "id": "L91",
+    "section": "logic",
+    "category": "deret_angka",
+    "question": "Lanjutkan deret berikut: 2, 3, 5, 9, 17, ...",
+    "options": [
+      "33",
+      "34",
+      "32",
+      "31"
+    ],
+    "answer_index": 0,
+    "hint": "Selisih antar suku berlipat ganda setiap langkah.",
+    "explanation": "Selisihnya 1, 2, 4, 8, lalu 16. Jadi 17 + 16 = 33 (bukan 34 = 17×2).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L92",
+    "section": "logic",
+    "category": "deret_huruf",
+    "question": "Lanjutkan deret huruf berikut: Z, Y, W, T, P, ...",
+    "options": [
+      "K",
+      "L",
+      "J",
+      "M"
+    ],
+    "answer_index": 0,
+    "hint": "Ubah ke nomor urut; pengurangannya makin besar.",
+    "explanation": "Nomor urut 26, 25, 23, 20, 16 (turun 1, 2, 3, 4, lalu 5). 16 − 5 = 11 = K.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L93",
+    "section": "logic",
+    "category": "pola_matriks",
+    "question": "Perhatikan matriks. Baris 1: [2, 3, 7]; Baris 2: [3, 4, 13]; Baris 3: [4, 5, ?]. Berapa nilai ?",
+    "options": [
+      "21",
+      "20",
+      "19",
+      "22"
+    ],
+    "answer_index": 0,
+    "hint": "Kolom ketiga bukan sekadar hasil perkalian dua kolom pertama.",
+    "explanation": "Kolom 3 = (kolom 1 × kolom 2) + 1 → (2×3)+1=7, (3×4)+1=13, maka (4×5)+1 = 21 (bukan 20).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L94",
+    "section": "logic",
+    "category": "definisi_operator",
+    "question": "Jika a ¤ b = a² + b² − (a × b), maka nilai dari 4 ¤ 2 adalah?",
+    "options": [
+      "12",
+      "28",
+      "8",
+      "20"
+    ],
+    "answer_index": 0,
+    "hint": "Hitung tiap suku terpisah; perhatikan tanda kurang.",
+    "explanation": "4² + 2² − (4×2) = 16 + 4 − 8 = 12 (bukan 28 = 16+4+8, atau 20 = 16+4).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L95",
+    "section": "logic",
+    "category": "silogisme",
+    "question": "Semua seniman kreatif. Beberapa orang kreatif kaya. Manakah kesimpulan yang PASTI benar?",
+    "options": [
+      "Beberapa seniman kaya",
+      "Semua orang kreatif adalah seniman",
+      "Tidak ada kesimpulan yang pasti benar di antara pilihan ini",
+      "Beberapa orang kaya adalah seniman"
+    ],
+    "answer_index": 2,
+    "hint": "Orang kreatif yang kaya belum tentu termasuk para seniman.",
+    "explanation": "Seniman ⊆ kreatif, tetapi 'kreatif yang kaya' tak harus seniman. Maka tak ada kesimpulan yang pasti benar.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L96",
+    "section": "logic",
+    "category": "analogi",
+    "question": "Dokter : Stetoskop = Pelukis : ...",
+    "options": [
+      "Kanvas",
+      "Kuas",
+      "Cat",
+      "Galeri"
+    ],
+    "answer_index": 1,
+    "hint": "Stetoskop adalah ALAT yang dipegang dokter untuk bekerja.",
+    "explanation": "Stetoskop adalah alat kerja dokter; alat kerja pelukis yang sepadan adalah kuas (bukan kanvas/cat sebagai media).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L97",
+    "section": "logic",
+    "category": "sandi",
+    "question": "Jika KODE ditulis menjadi LQGI (huruf digeser +1, +2, +3, +4), maka SOAL ditulis menjadi?",
+    "options": [
+      "TQDP",
+      "TQDM",
+      "TPDP",
+      "TQEP"
+    ],
+    "answer_index": 0,
+    "hint": "Pergeseran tiap huruf berbeda: posisi 1 +1, posisi 2 +2, dst.",
+    "explanation": "S+1=T, O+2=Q, A+3=D, L+4=P menghasilkan TQDP.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L98",
+    "section": "logic",
+    "category": "susunan_posisi",
+    "question": "Empat orang (P, Q, R, S) mengantre. S tepat sebelum P. R tepat sebelum S. Q berada di depan R. P tidak berada paling depan. Urutan dari paling depan?",
+    "options": [
+      "Q, R, S, P",
+      "P, S, R, Q",
+      "Q, S, R, P",
+      "R, S, P, Q"
+    ],
+    "answer_index": 0,
+    "hint": "Gabungkan rantai R-S-P lalu tempatkan Q.",
+    "explanation": "R tepat sebelum S, S tepat sebelum P → R, S, P. Q di depan R → Q, R, S, P (P tidak di depan: terpenuhi).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L99",
+    "section": "logic",
+    "category": "urutan_komparatif",
+    "question": "A lebih tinggi dari B tetapi lebih pendek dari C. D lebih tinggi dari C. E lebih pendek dari B. Siapa yang tertinggi kedua?",
+    "options": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "answer_index": 1,
+    "hint": "Susun lengkap dulu dari tertinggi ke terpendek.",
+    "explanation": "Urutan: D > C > A > B > E. Tertinggi kedua adalah C (D yang tertinggi).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L100",
+    "section": "logic",
+    "category": "probabilitas",
+    "question": "Dua dadu dilempar bersamaan. Berapa peluang jumlah kedua mata dadu sama dengan 7?",
+    "options": [
+      "1/6",
+      "1/12",
+      "7/36",
+      "5/36"
+    ],
+    "answer_index": 0,
+    "hint": "Hitung pasangan yang berjumlah 7 dari total 36 kemungkinan.",
+    "explanation": "Pasangan berjumlah 7: (1,6),(2,5),(3,4),(4,3),(5,2),(6,1) = 6 dari 36 → 6/36 = 1/6.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L101",
+    "section": "logic",
+    "category": "soal_cerita",
+    "question": "Barang seharga Rp100.000 mendapat diskon 20%, lalu harga setelah diskon dikenai pajak 10%. Berapa total yang dibayar?",
+    "options": [
+      "Rp88.000",
+      "Rp90.000",
+      "Rp80.000",
+      "Rp98.000"
+    ],
+    "answer_index": 0,
+    "hint": "Terapkan diskon dulu, baru pajak atas harga yang sudah didiskon.",
+    "explanation": "Setelah diskon: Rp80.000. Pajak 10% × 80.000 = Rp8.000. Total = Rp88.000 (bukan 90.000).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L102",
+    "section": "logic",
+    "category": "spasial",
+    "question": "Sebuah kubus 4×4×4 dicat seluruh permukaannya lalu dipotong menjadi 64 kubus kecil. Berapa kubus kecil yang sama sekali tidak terkena cat?",
+    "options": [
+      "8",
+      "16",
+      "24",
+      "27"
+    ],
+    "answer_index": 0,
+    "hint": "Kubus tak tercat membentuk kubus dalam berukuran (4−2) per sisi.",
+    "explanation": "Bagian dalam berukuran 2×2×2 = 8 kubus kecil yang tidak menyentuh permukaan luar.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L103",
+    "section": "logic",
+    "category": "klasifikasi",
+    "question": "Manakah bilangan yang berbeda dari yang lain? 8, 27, 64, 100",
+    "options": [
+      "8",
+      "27",
+      "64",
+      "100"
+    ],
+    "answer_index": 3,
+    "hint": "Tiga di antaranya adalah hasil pangkat tiga (bilangan kubik).",
+    "explanation": "8=2³, 27=3³, 64=4³ (bilangan kubik); 100 bukan kubik (100=10², hanya kuadrat).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L104",
+    "section": "logic",
+    "category": "jam",
+    "question": "Berapa besar sudut antara jarum jam dan jarum menit pada pukul 04:20?",
+    "options": [
+      "10°",
+      "20°",
+      "30°",
+      "0°"
+    ],
+    "answer_index": 0,
+    "hint": "Jarum jam sudah bergeser dari angka 4: tambahkan 0,5° per menit.",
+    "explanation": "Jarum jam = 4×30 + 20×0,5 = 130°; jarum menit = 20×6 = 120°; selisih = 10°.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L105",
+    "section": "logic",
+    "category": "logika_pernyataan",
+    "question": "Pernyataan manakah yang EKUIVALEN dengan 'Jika tidak belajar maka tidak lulus'?",
+    "options": [
+      "Jika belajar maka lulus",
+      "Jika lulus maka belajar",
+      "Jika tidak lulus maka tidak belajar",
+      "Jika belajar maka tidak lulus"
+    ],
+    "answer_index": 1,
+    "hint": "Yang ekuivalen adalah kontraposisi (tukar posisi sekaligus negasikan).",
+    "explanation": "Kontraposisi dari 'jika ¬belajar maka ¬lulus' adalah 'jika lulus maka belajar'. (Pilihan A=konvers, C=invers — keduanya tidak ekuivalen.)",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P61",
+    "section": "programming",
+    "category": "trace_aritmatika",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "print(2 + 3 * 4 - 6 // 2)",
+    "options": [
+      "11",
+      "17",
+      "13",
+      "7"
+    ],
+    "answer_index": 0,
+    "hint": "Perkalian dan pembagian bulat dikerjakan sebelum penjumlahan/pengurangan.",
+    "explanation": "3*4=12, 6//2=3, lalu 2+12−3 = 11 (bukan 17 jika dihitung kiri-ke-kanan).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P62",
+    "section": "programming",
+    "category": "loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "r = 0\nfor i in range(1, 6):\n    if i % 2 == 0:\n        r += i\n    else:\n        r -= i\nprint(r)",
+    "options": [
+      "-3",
+      "3",
+      "9",
+      "-9"
+    ],
+    "answer_index": 0,
+    "hint": "Tambah jika genap, kurang jika ganjil. i berjalan 1..5.",
+    "explanation": "−1 + 2 − 3 + 4 − 5 = −3.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P63",
+    "section": "programming",
+    "category": "nested_loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "c = 0\nfor i in range(4):\n    for j in range(4):\n        if j > i:\n            c += 1\nprint(c)",
+    "options": [
+      "6",
+      "10",
+      "12",
+      "4"
+    ],
+    "answer_index": 0,
+    "hint": "Hitung pasangan (i, j) yang memenuhi j > i.",
+    "explanation": "i=0→3, i=1→2, i=2→1, i=3→0 pasangan, total 3+2+1+0 = 6.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P64",
+    "section": "programming",
+    "category": "while",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "n = 45\ns = 0\nwhile n > 0:\n    s += n % 10\n    n //= 10\nprint(s)",
+    "options": [
+      "9",
+      "45",
+      "13",
+      "0"
+    ],
+    "answer_index": 0,
+    "hint": "n % 10 mengambil digit terakhir; n //= 10 membuang digit terakhir.",
+    "explanation": "Menjumlahkan digit-digit 45: 5 + 4 = 9.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P65",
+    "section": "programming",
+    "category": "percabangan",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "x = 2\ny = 10\nif x > 3 and y > 8 or x < 5:\n    print('A')\nelse:\n    print('B')",
+    "options": [
+      "A",
+      "B",
+      "error",
+      "AB"
+    ],
+    "answer_index": 0,
+    "hint": "Operator 'and' dievaluasi sebelum 'or'.",
+    "explanation": "(x>3 and y>8) or (x<5) = (False and True) or True = True → 'A'.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P66",
+    "section": "programming",
+    "category": "boolean",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "print(bool(0) or bool('') or bool('0'))",
+    "options": [
+      "True",
+      "False",
+      "0",
+      "None"
+    ],
+    "answer_index": 0,
+    "hint": "String yang tidak kosong selalu bernilai True, meskipun isinya '0'.",
+    "explanation": "bool(0)=False, bool('')=False, tetapi bool('0')=True (string tak kosong) → hasilnya True.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P67",
+    "section": "programming",
+    "category": "pembagian_modulo",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "print(-7 % 3)",
+    "options": [
+      "2",
+      "-1",
+      "1",
+      "-2"
+    ],
+    "answer_index": 0,
+    "hint": "Pada Python, hasil modulo mengikuti tanda pembagi (positif).",
+    "explanation": "−7 = (−3)×3 + 2, sehingga −7 % 3 = 2 (bukan −1 seperti di sebagian bahasa lain).",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P68",
+    "section": "programming",
+    "category": "array",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "a = [1, 2, 3, 4, 5]\nprint(a[1:4])",
+    "options": [
+      "[2, 3, 4]",
+      "[2, 3, 4, 5]",
+      "[1, 2, 3, 4]",
+      "[2, 3]"
+    ],
+    "answer_index": 0,
+    "hint": "Slice [1:4] mengambil indeks 1, 2, 3 (indeks 4 tidak termasuk).",
+    "explanation": "a[1:4] mengambil elemen indeks 1 sampai 3 → [2, 3, 4].",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P69",
+    "section": "programming",
+    "category": "string",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "s = 'abcdef'\nprint(s[::2])",
+    "options": [
+      "ace",
+      "abc",
+      "bdf",
+      "acf"
+    ],
+    "answer_index": 0,
+    "hint": "Langkah (step) 2 mengambil setiap karakter kedua mulai dari indeks 0.",
+    "explanation": "s[::2] mengambil indeks 0, 2, 4 → 'ace'.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P70",
+    "section": "programming",
+    "category": "fungsi",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "def f(n):\n    if n <= 1:\n        return 1\n    return n * f(n - 1)\nprint(f(4))",
+    "options": [
+      "24",
+      "10",
+      "4",
+      "12"
+    ],
+    "answer_index": 0,
+    "hint": "Fungsi memanggil dirinya sendiri (rekursi) — ini menghitung faktorial.",
+    "explanation": "f(4) = 4×3×2×1 = 24.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P71",
+    "section": "programming",
+    "category": "oop_class",
+    "question": "Manakah pernyataan yang SALAH tentang class?",
+    "options": [
+      "Sebuah class dapat digunakan untuk membuat banyak object",
+      "Class adalah cetak biru bagi object",
+      "Sebuah class harus memiliki minimal satu object agar dapat didefinisikan",
+      "Class dapat memiliki atribut dan method"
+    ],
+    "answer_index": 2,
+    "hint": "Pikirkan apakah class bisa ada tanpa object sama sekali.",
+    "explanation": "Class dapat didefinisikan tanpa membuat object apa pun. Jadi pernyataan 'harus punya minimal satu object' SALAH.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P72",
+    "section": "programming",
+    "category": "oop_object",
+    "question": "Dua object berbeda dari class yang sama dibandingkan dengan '==' tanpa kustomisasi. Secara default keduanya dianggap sama hanya jika?",
+    "options": [
+      "Nilai semua atributnya sama",
+      "Class-nya sama",
+      "Keduanya merujuk pada instance yang sama (identitas sama)",
+      "Tidak pernah bisa dibandingkan"
+    ],
+    "answer_index": 2,
+    "hint": "Tanpa override, perbandingan default mengecek identitas, bukan isi.",
+    "explanation": "Secara default '==' membandingkan identitas (referensi). Dua object berbeda dianggap sama hanya jika sebenarnya instance yang sama.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P73",
+    "section": "programming",
+    "category": "oop_inheritance",
+    "question": "Class C mewarisi class B, dan class B mewarisi class A. Jika method info() hanya didefinisikan di A, maka object dari C...",
+    "options": [
+      "Tidak bisa memanggil info()",
+      "Bisa memanggil info() karena diwariskan dari A melalui B",
+      "Hanya bisa jika B mendefinisikan ulang info()",
+      "Error karena A bukan parent langsung dari C"
+    ],
+    "answer_index": 1,
+    "hint": "Pewarisan bersifat transitif menaiki rantai class.",
+    "explanation": "Pewarisan transitif: C mewarisi B yang mewarisi A, sehingga object C tetap dapat memanggil info() milik A.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P74",
+    "section": "programming",
+    "category": "oop_encapsulation",
+    "question": "Pada Swift, modifier akses yang membatasi sebuah anggota agar hanya dapat diakses di dalam file sumber yang sama adalah?",
+    "options": [
+      "private",
+      "fileprivate",
+      "public",
+      "internal"
+    ],
+    "answer_index": 1,
+    "hint": "Lebih longgar dari 'private', tetapi terbatas pada satu berkas.",
+    "explanation": "`fileprivate` membatasi akses ke dalam file yang sama; `private` lebih ketat (lingkup deklarasi), `internal` selingkup modul.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "P75",
+    "section": "programming",
+    "category": "oop_polymorphism",
+    "question": "Polymorphism di mana method yang dijalankan baru ditentukan saat program BERJALAN (bukan saat kompilasi) disebut?",
+    "options": [
+      "Static binding",
+      "Compile-time polymorphism",
+      "Dynamic dispatch (runtime polymorphism)",
+      "Overloading"
+    ],
+    "answer_index": 2,
+    "hint": "Penentuan method terjadi pada saat runtime.",
+    "explanation": "Penentuan method saat runtime disebut dynamic dispatch (runtime polymorphism), umumnya lewat overriding. Overloading justru ditentukan saat kompilasi.",
+    "difficulty": "hard"
   }
 ]/*QUESTIONS_END*/;
 
@@ -2773,6 +3274,15 @@ const CFG = {
   programmingPerSession: 15,
   maxPerCategory: 3,        // maksimum soal per kategori dalam satu sesi
   durationSeconds: 60 * 60, // 60 menit
+};
+
+/* Tingkat kesulitan: tiap level hanya mengambil soal dengan difficulty tertentu. */
+const LEVELS = {
+  all:      { label: "Semua tingkat",  diffs: ["easy", "medium", "hard"] },
+  pemula:   { label: "Pemula",         diffs: ["easy"] },
+  menengah: { label: "Menengah",       diffs: ["easy", "medium"] },
+  mahir:    { label: "Mahir",          diffs: ["medium", "hard"] },
+  ahli:     { label: "Ahli",           diffs: ["hard"] },
 };
 
 /* ==================== STATE (in-memory saja) ==================== */
@@ -2818,18 +3328,22 @@ function prepareQuestion(q) {
   return { ...q, options, answer_index };
 }
 
-function buildSession(mode) {
+function buildSession(mode, level) {
+  // Saring pool sesuai tingkat kesulitan yang dipilih.
+  const allowed = (LEVELS[level] || LEVELS.all).diffs;
+  const pool = QUESTIONS.filter(q => allowed.includes(q.difficulty));
+
   let questions;
   if (mode === "all") {
-    const logic = QUESTIONS.filter(q => q.section === "logic");
-    const prog = QUESTIONS.filter(q => q.section === "programming");
+    const logic = pool.filter(q => q.section === "logic");
+    const prog = pool.filter(q => q.section === "programming");
     questions = [
       ...pickWithQuota(logic, CFG.logicPerSession, CFG.maxPerCategory),
       ...pickWithQuota(prog, CFG.programmingPerSession, CFG.maxPerCategory),
     ];
   } else {
     // mode fokus kategori
-    questions = shuffle(QUESTIONS.filter(q => q.category === mode));
+    questions = shuffle(pool.filter(q => q.category === mode));
   }
   questions = shuffle(questions).map(prepareQuestion);
   return {
@@ -3097,11 +3611,35 @@ function show(screenId) {
 
 function startSession() {
   const mode = document.getElementById("modeSelect").value;
-  session = buildSession(mode);
-  if (session.questions.length === 0) { alert("Tidak ada soal untuk mode ini."); return; }
+  const level = document.getElementById("levelSelect").value;
+  session = buildSession(mode, level);
+  if (session.questions.length === 0) {
+    alert("Tidak ada soal untuk kombinasi mode & tingkat kesulitan ini. Coba longgarkan tingkatnya.");
+    return;
+  }
   show("quizScreen");
   startTimer();
   renderQuestion();
+}
+
+// Perbarui ringkasan jumlah soal sesuai mode + tingkat yang dipilih.
+function updateSessionInfo() {
+  const mode = document.getElementById("modeSelect").value;
+  const level = document.getElementById("levelSelect").value;
+  const allowed = (LEVELS[level] || LEVELS.all).diffs;
+  const pool = QUESTIONS.filter(q => allowed.includes(q.difficulty));
+  const info = document.getElementById("sessionInfo");
+  let total;
+  if (mode === "all") {
+    const l = Math.min(CFG.logicPerSession, pool.filter(q => q.section === "logic").length);
+    const p = Math.min(CFG.programmingPerSession, pool.filter(q => q.section === "programming").length);
+    total = l + p;
+    info.textContent = `Sesi ini: ${l} Logic + ${p} Programming = ${total} soal · tingkat ${(LEVELS[level] || LEVELS.all).label}.`;
+  } else {
+    total = pool.filter(q => q.category === mode).length;
+    info.textContent = `Sesi ini: ${total} soal kategori "${mode.replace(/_/g," ")}" · tingkat ${(LEVELS[level] || LEVELS.all).label}.`;
+  }
+  document.getElementById("metaCount").textContent = total;
 }
 
 /* ==================== INIT ==================== */
@@ -3126,6 +3664,9 @@ function init() {
     return;
   }
   populateModes();
+  updateSessionInfo();
+  document.getElementById("levelSelect").addEventListener("change", updateSessionInfo);
+  document.getElementById("modeSelect").addEventListener("change", updateSessionInfo);
   document.getElementById("startBtn").addEventListener("click", startSession);
   document.getElementById("nextBtn").addEventListener("click", goNext);
   document.getElementById("prevBtn").addEventListener("click", goPrev);
