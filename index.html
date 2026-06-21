@@ -1,0 +1,1939 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Simulator Tes Apple Developer Academy</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --border: #38383a;
+    --text: #f5f5f7;
+    --text-dim: #8e8e93;
+    --accent: #0a84ff;
+    --green: #30d158;
+    --red: #ff453a;
+    --yellow: #ffd60a;
+    --orange: #ff9f0a;
+    --radius: 16px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 18px 64px;
+  }
+  h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+  button:focus-visible, .opt:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { font-size: 15px; font-weight: 600; }
+  .brand .dim { color: var(--text-dim); font-weight: 400; }
+  .timer {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-family: var(--mono);
+    font-size: 17px; font-weight: 600;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    min-width: 78px; text-align: center;
+  }
+  .timer.warn { color: var(--yellow); border-color: var(--yellow); }
+  .timer.danger { color: var(--red); border-color: var(--red); }
+
+  .scores { display: flex; gap: 8px; }
+  .pill {
+    font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px; background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+  .pill.ok { color: var(--green); }
+  .pill.no { color: var(--red); }
+
+  /* ---------- progress ---------- */
+  .progress-row { display: flex; align-items: center; gap: 12px; margin: 22px 0 8px; }
+  .progress-track { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; }
+  .progress-label { font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---------- card ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-top: 8px;
+  }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .badge {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim);
+  }
+  .badge.logic { color: var(--accent); border-color: rgba(10,132,255,0.5); }
+  .badge.programming { color: var(--orange); border-color: rgba(255,159,10,0.5); }
+  .qtext { font-size: 19px; font-weight: 600; margin: 0 0 16px; letter-spacing: -0.01em; }
+  pre.code {
+    background: #0d0d0f; border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; overflow-x: auto; margin: 0 0 18px;
+    font-family: var(--mono); font-size: 14px; line-height: 1.55; color: #e6e6e6;
+  }
+
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); font-size: 16px;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--text-dim); }
+  .opt:active:not(:disabled) { transform: scale(0.99); }
+  .opt:disabled { cursor: default; }
+  .opt .key {
+    flex: 0 0 26px; height: 26px; border-radius: 7px; display: grid; place-items: center;
+    background: var(--bg); border: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--text-dim);
+  }
+  .opt.correct { background: rgba(48,209,88,0.16); border-color: var(--green); }
+  .opt.correct .key { background: var(--green); color: #002; border-color: var(--green); }
+  .opt.wrong { background: rgba(255,69,58,0.16); border-color: var(--red); }
+  .opt.wrong .key { background: var(--red); color: #200; border-color: var(--red); }
+
+  .reveal { margin-top: 16px; display: none; }
+  .reveal.show { display: block; animation: fade 0.25s ease; }
+  .explanation {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; font-size: 15px; color: var(--text);
+  }
+  .explanation strong { color: var(--green); }
+
+  .hint-toggle {
+    margin-top: 14px; font-size: 14px; color: var(--accent); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .hint-box {
+    display: none; margin-top: 10px; padding: 12px 14px; font-size: 14px;
+    background: rgba(255,214,10,0.10); border: 1px solid rgba(255,214,10,0.4);
+    border-radius: 12px; color: #ffe98a;
+  }
+  .hint-box.show { display: block; }
+
+  /* ---------- nav ---------- */
+  .nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; }
+  .btn {
+    padding: 13px 22px; border-radius: 12px; font-size: 16px; font-weight: 600;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+    transition: background 0.15s ease, opacity 0.15s ease;
+  }
+  .btn:hover:not(:disabled) { background: var(--border); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #3398ff; }
+  .btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* ---------- pause ---------- */
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .pausebtn {
+    font-size: 16px; line-height: 1; padding: 7px 12px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  }
+  .pausebtn:hover { background: var(--border); }
+  .pause-overlay {
+    position: fixed; inset: 0; z-index: 50; display: none; place-items: center;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .pause-overlay.show { display: grid; }
+  .pause-card { text-align: center; padding: 32px 24px; max-width: 420px; }
+  .pause-card h2 { font-size: 26px; margin: 8px 0 6px; }
+  .pause-card .sub { margin-bottom: 22px; }
+
+  /* ---------- start & result screens ---------- */
+  .center { text-align: center; padding-top: 6vh; }
+  .center h1 { font-size: 30px; margin: 0 0 8px; }
+  .center .sub { color: var(--text-dim); font-size: 16px; max-width: 460px; margin: 0 auto 26px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 460px; margin: 0 auto 28px; }
+  .meta-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .meta-cell .k { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-cell .v { font-size: 22px; font-weight: 700; margin-top: 4px; }
+
+  .ring-wrap { display: grid; place-items: center; margin: 8px auto 24px; }
+  .ring { transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--surface-2); stroke-width: 14; }
+  .ring-fill { fill: none; stroke: var(--green); stroke-width: 14; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-text { font-size: 38px; font-weight: 700; }
+  .ring-label { font-size: 14px; color: var(--text-dim); }
+
+  .result-rows { max-width: 460px; margin: 0 auto 26px; display: flex; flex-direction: column; gap: 10px; }
+  .rrow { display: flex; justify-content: space-between; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; font-size: 16px; }
+  .rrow .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .toolbar { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; }
+  .toolbar .btn { flex: 1; }
+
+  .field { max-width: 460px; margin: 0 auto 16px; text-align: left; }
+  .field label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+  select {
+    width: 100%; padding: 12px 14px; font-size: 16px; font-family: inherit;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px;
+  }
+
+  /* ---------- review ---------- */
+  .review-item { margin-bottom: 14px; }
+  .review-item .qtext { font-size: 16px; }
+  .tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
+  .tag.ok { background: rgba(48,209,88,0.18); color: var(--green); }
+  .tag.no { background: rgba(255,69,58,0.18); color: var(--red); }
+  .tag.blank { background: var(--surface-2); color: var(--text-dim); }
+
+  .hidden { display: none !important; }
+
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 480px) {
+    .qtext { font-size: 17px; }
+    .meta-grid { grid-template-columns: 1fr; }
+    .topbar { padding: 10px 14px; }
+    .brand { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar" id="topbar">
+    <div class="brand"> Developer Academy <span class="dim">· Mock Test</span></div>
+    <div class="scores" id="scores">
+      <span class="pill ok" id="pillOk">✓ 0</span>
+      <span class="pill no" id="pillNo">✕ 0</span>
+    </div>
+    <div class="topbar-right">
+      <button class="pausebtn" id="pauseBtn" title="Jeda (P)" aria-label="Jeda waktu">⏸</button>
+      <div class="timer" id="timer">60:00</div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY JEDA ============ -->
+  <div class="pause-overlay" id="pauseOverlay" aria-hidden="true">
+    <div class="pause-card">
+      <div style="font-size:44px">⏸</div>
+      <h2>Dijeda</h2>
+      <p class="sub">Waktu dihentikan sementara. Soal disembunyikan agar tetap adil.</p>
+      <button class="btn primary" id="resumeBtn">Lanjutkan</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- ============ START SCREEN ============ -->
+    <section id="startScreen" class="center">
+      <h1>Simulator Tes Masuk</h1>
+      <p class="sub">Latihan Logic Test &amp; Programming/OOP bergaya tes masuk Apple Developer Academy Indonesia. Soal &amp; opsi diacak setiap sesi.</p>
+      <div class="meta-grid">
+        <div class="meta-cell"><div class="k">Soal</div><div class="v" id="metaCount">40</div></div>
+        <div class="meta-cell"><div class="k">Durasi</div><div class="v">60 menit</div></div>
+        <div class="meta-cell"><div class="k">Logic</div><div class="v">25 soal</div></div>
+        <div class="meta-cell"><div class="k">Programming</div><div class="v">15 soal</div></div>
+      </div>
+      <div class="field">
+        <label for="modeSelect">Mode latihan</label>
+        <select id="modeSelect"></select>
+      </div>
+      <button class="btn primary" id="startBtn" style="min-width:220px">Mulai Simulasi</button>
+    </section>
+
+    <!-- ============ QUIZ SCREEN ============ -->
+    <section id="quizScreen" class="hidden">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">1 / 40</div>
+      </div>
+      <div class="card" id="card"><!-- diisi JS --></div>
+      <div class="nav">
+        <button class="btn" id="prevBtn">‹ Sebelumnya</button>
+        <button class="btn primary" id="nextBtn">Berikutnya ›</button>
+      </div>
+    </section>
+
+    <!-- ============ RESULT SCREEN ============ -->
+    <section id="resultScreen" class="center hidden">
+      <h1>Hasil Simulasi</h1>
+      <div class="ring-wrap">
+        <svg class="ring" width="180" height="180" viewBox="0 0 180 180" aria-hidden="true">
+          <circle class="ring-track" cx="90" cy="90" r="78"></circle>
+          <circle class="ring-fill" id="ringFill" cx="90" cy="90" r="78"></circle>
+        </svg>
+        <div style="position:absolute; text-align:center">
+          <div class="ring-text" id="ringText">0%</div>
+          <div class="ring-label" id="ringLabel">skor</div>
+        </div>
+      </div>
+      <div class="result-rows" id="resultRows"></div>
+      <div class="toolbar">
+        <button class="btn" id="reviewBtn">Tinjau Jawaban</button>
+        <button class="btn primary" id="retryBtn">Ulangi</button>
+      </div>
+    </section>
+
+    <!-- ============ REVIEW SCREEN ============ -->
+    <section id="reviewScreen" class="hidden">
+      <h2 style="margin-top:18px">Tinjau Jawaban</h2>
+      <div id="reviewList"></div>
+      <div class="nav">
+        <button class="btn" id="backToResultBtn">‹ Kembali ke Hasil</button>
+        <button class="btn primary" id="retry2Btn">Ulangi</button>
+      </div>
+    </section>
+  </div>
+
+<script>
+/* ====================================================================
+   BANK SOAL — disuntik oleh build.py dari data/questions.json.
+   Penanda di bawah JANGAN diubah; build.py mengganti isi di antaranya.
+   ==================================================================== */
+const QUESTIONS = /*QUESTIONS_START*/[
+  {
+    "id": "L01",
+    "section": "logic",
+    "category": "deret_angka",
+    "question": "Lanjutkan deret berikut: 2, 6, 12, 20, 30, ...",
+    "options": [
+      "40",
+      "42",
+      "44",
+      "46"
+    ],
+    "answer_index": 1,
+    "hint": "Perhatikan selisih antar bilangan: 4, 6, 8, 10, ...",
+    "explanation": "Selisihnya bertambah 2 setiap langkah (4, 6, 8, 10, 12). Jadi 30 + 12 = 42.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L02",
+    "section": "logic",
+    "category": "deret_angka",
+    "question": "Lanjutkan deret berikut: 3, 6, 12, 24, ...",
+    "options": [
+      "36",
+      "42",
+      "48",
+      "54"
+    ],
+    "answer_index": 2,
+    "hint": "Setiap bilangan adalah kelipatan dari bilangan sebelumnya.",
+    "explanation": "Setiap suku dikalikan 2: 24 × 2 = 48.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L03",
+    "section": "logic",
+    "category": "deret_angka",
+    "question": "Lanjutkan deret berikut: 1, 4, 9, 16, 25, ...",
+    "options": [
+      "30",
+      "32",
+      "36",
+      "49"
+    ],
+    "answer_index": 2,
+    "hint": "Deret ini adalah hasil kuadrat bilangan asli.",
+    "explanation": "Deret kuadrat: 1², 2², 3², 4², 5², 6². Suku berikutnya 6² = 36.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L04",
+    "section": "logic",
+    "category": "deret_huruf",
+    "question": "Lanjutkan deret huruf berikut: A, C, E, G, ...",
+    "options": [
+      "H",
+      "I",
+      "J",
+      "K"
+    ],
+    "answer_index": 1,
+    "hint": "Lewati satu huruf setiap langkah.",
+    "explanation": "Polanya melompati satu huruf (A, _, C, _, E, _, G, _, I). Jadi setelah G adalah I.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L05",
+    "section": "logic",
+    "category": "deret_huruf",
+    "question": "Lanjutkan deret huruf berikut: B, D, G, K, ...",
+    "options": [
+      "N",
+      "O",
+      "P",
+      "Q"
+    ],
+    "answer_index": 2,
+    "hint": "Ubah huruf ke nomor urut alfabet, lalu lihat selisihnya.",
+    "explanation": "Nomor urut: B(2), D(4), G(7), K(11) dengan selisih +2, +3, +4, lalu +5 → 16 = P.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L06",
+    "section": "logic",
+    "category": "deret_huruf",
+    "question": "Lanjutkan deret huruf berikut: Z, X, V, T, ...",
+    "options": [
+      "S",
+      "R",
+      "Q",
+      "P"
+    ],
+    "answer_index": 1,
+    "hint": "Deret berjalan mundur dengan pola tetap.",
+    "explanation": "Setiap langkah mundur 2 huruf (Z, X, V, T, R). Jadi setelah T adalah R.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L07",
+    "section": "logic",
+    "category": "pola_matriks",
+    "question": "Perhatikan matriks. Baris 1: [2, 3, 5]; Baris 2: [4, 5, 9]; Baris 3: [6, 7, ?]. Berapa nilai ?",
+    "options": [
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "answer_index": 2,
+    "hint": "Bandingkan kolom ketiga dengan dua kolom pertama.",
+    "explanation": "Kolom ketiga = kolom 1 + kolom 2 (2+3=5, 4+5=9). Maka 6 + 7 = 13.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L08",
+    "section": "logic",
+    "category": "pola_matriks",
+    "question": "Perhatikan matriks. Baris 1: [2, 3, 6]; Baris 2: [4, 2, 8]; Baris 3: [5, 3, ?]. Berapa nilai ?",
+    "options": [
+      "12",
+      "15",
+      "18",
+      "20"
+    ],
+    "answer_index": 1,
+    "hint": "Operasi apa yang menghubungkan dua kolom pertama dengan kolom ketiga?",
+    "explanation": "Kolom ketiga = kolom 1 × kolom 2 (2×3=6, 4×2=8). Maka 5 × 3 = 15.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L09",
+    "section": "logic",
+    "category": "pola_matriks",
+    "question": "Perhatikan matriks. Baris 1: [8, 4, 2]; Baris 2: [9, 3, 3]; Baris 3: [12, 4, ?]. Berapa nilai ?",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "6"
+    ],
+    "answer_index": 1,
+    "hint": "Coba operasi pembagian antar kolom.",
+    "explanation": "Kolom ketiga = kolom 1 ÷ kolom 2 (8÷4=2, 9÷3=3). Maka 12 ÷ 4 = 3.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L10",
+    "section": "logic",
+    "category": "definisi_operator",
+    "question": "Jika a # b = a + 2b, maka nilai dari 3 # 4 adalah?",
+    "options": [
+      "10",
+      "11",
+      "14",
+      "7"
+    ],
+    "answer_index": 1,
+    "hint": "Substitusikan a = 3 dan b = 4 ke dalam definisi.",
+    "explanation": "3 # 4 = 3 + 2(4) = 3 + 8 = 11.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L11",
+    "section": "logic",
+    "category": "definisi_operator",
+    "question": "Jika a @ b = a² − b, maka nilai dari 5 @ 4 adalah?",
+    "options": [
+      "19",
+      "21",
+      "23",
+      "9"
+    ],
+    "answer_index": 1,
+    "hint": "Kuadratkan a terlebih dahulu, lalu kurangi b.",
+    "explanation": "5 @ 4 = 5² − 4 = 25 − 4 = 21.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L12",
+    "section": "logic",
+    "category": "definisi_operator",
+    "question": "Jika a ⊕ b = (a × b) − (a + b), maka nilai dari 5 ⊕ 3 adalah?",
+    "options": [
+      "5",
+      "7",
+      "9",
+      "11"
+    ],
+    "answer_index": 1,
+    "hint": "Hitung perkalian dan penjumlahan secara terpisah lalu kurangkan.",
+    "explanation": "5 ⊕ 3 = (5×3) − (5+3) = 15 − 8 = 7.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L13",
+    "section": "logic",
+    "category": "silogisme",
+    "question": "Semua kucing adalah mamalia. Semua mamalia bernapas dengan paru-paru. Kesimpulan yang sah adalah?",
+    "options": [
+      "Semua kucing bernapas dengan paru-paru",
+      "Sebagian mamalia adalah kucing",
+      "Semua mamalia adalah kucing",
+      "Sebagian kucing tidak bernapas dengan paru-paru"
+    ],
+    "answer_index": 0,
+    "hint": "Rangkai dua premis: kucing → mamalia → paru-paru.",
+    "explanation": "Karena semua kucing mamalia dan semua mamalia bernapas dengan paru-paru, maka semua kucing pasti bernapas dengan paru-paru.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L14",
+    "section": "logic",
+    "category": "silogisme",
+    "question": "Semua dokter pandai. Sebagian dokter adalah perempuan. Kesimpulan yang sah adalah?",
+    "options": [
+      "Semua perempuan pandai",
+      "Sebagian perempuan pandai",
+      "Semua yang pandai adalah dokter",
+      "Sebagian dokter tidak pandai"
+    ],
+    "answer_index": 1,
+    "hint": "Sebagian dokter perempuan, dan semua dokter pandai.",
+    "explanation": "Sebagian dokter adalah perempuan, dan semua dokter pandai, maka sebagian perempuan (yang merupakan dokter) pasti pandai.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L15",
+    "section": "logic",
+    "category": "silogisme",
+    "question": "Tidak ada ikan yang dapat terbang. Semua hiu adalah ikan. Kesimpulan yang sah adalah?",
+    "options": [
+      "Sebagian hiu dapat terbang",
+      "Semua ikan adalah hiu",
+      "Tidak ada hiu yang dapat terbang",
+      "Sebagian hiu bukan ikan"
+    ],
+    "answer_index": 2,
+    "hint": "Hiu termasuk ikan, dan tidak ada ikan yang bisa terbang.",
+    "explanation": "Semua hiu adalah ikan, dan tidak ada ikan yang dapat terbang, maka tidak ada hiu yang dapat terbang.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L16",
+    "section": "logic",
+    "category": "analogi",
+    "question": "Dokter : Rumah Sakit = Guru : ...",
+    "options": [
+      "Buku",
+      "Sekolah",
+      "Murid",
+      "Pena"
+    ],
+    "answer_index": 1,
+    "hint": "Di mana tempat kerja utama seorang dokter dan seorang guru?",
+    "explanation": "Dokter bekerja di rumah sakit, guru bekerja di sekolah.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L17",
+    "section": "logic",
+    "category": "analogi",
+    "question": "Panas : Dingin = Terang : ...",
+    "options": [
+      "Lampu",
+      "Gelap",
+      "Siang",
+      "Cahaya"
+    ],
+    "answer_index": 1,
+    "hint": "Hubungan pada pasangan pertama adalah lawan kata.",
+    "explanation": "Panas lawan kata dingin; terang lawan kata gelap.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L18",
+    "section": "logic",
+    "category": "analogi",
+    "question": "Burung : Terbang = Ikan : ...",
+    "options": [
+      "Air",
+      "Sirip",
+      "Berenang",
+      "Laut"
+    ],
+    "answer_index": 2,
+    "hint": "Pasangan pertama menghubungkan hewan dengan cara bergeraknya.",
+    "explanation": "Burung bergerak dengan terbang; ikan bergerak dengan berenang.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L19",
+    "section": "logic",
+    "category": "sandi",
+    "question": "Jika KUCING ditulis menjadi LVDJOH (setiap huruf digeser satu maju), maka ANJING ditulis menjadi?",
+    "options": [
+      "BOKJOH",
+      "BOJKOH",
+      "ZMIHMF",
+      "BPKJPH"
+    ],
+    "answer_index": 0,
+    "hint": "Geser setiap huruf satu posisi maju dalam alfabet.",
+    "explanation": "A→B, N→O, J→K, I→J, N→O, G→H menghasilkan BOKJOH.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L20",
+    "section": "logic",
+    "category": "sandi",
+    "question": "Jika A=1, B=2, ..., Z=26, maka rangkaian 8-5-12-12-15 mengeja kata?",
+    "options": [
+      "HELLO",
+      "HALLO",
+      "HELO",
+      "WORLD"
+    ],
+    "answer_index": 0,
+    "hint": "Terjemahkan setiap angka menjadi huruf sesuai urutan alfabet.",
+    "explanation": "8=H, 5=E, 12=L, 12=L, 15=O menghasilkan HELLO.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L21",
+    "section": "logic",
+    "category": "sandi",
+    "question": "Jika A=1, B=2, ..., Z=26, maka kode untuk kata DADU adalah?",
+    "options": [
+      "4-1-4-21",
+      "4-1-4-20",
+      "3-1-3-21",
+      "4-1-4-22"
+    ],
+    "answer_index": 0,
+    "hint": "Cari nomor urut alfabet untuk D, A, D, dan U.",
+    "explanation": "D=4, A=1, D=4, U=21 sehingga kodenya 4-1-4-21.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L22",
+    "section": "logic",
+    "category": "susunan_posisi",
+    "question": "Dalam sebuah antrean: C berada di depan A. A berada di depan B. D berada tepat di belakang B. Bagaimana urutan dari paling depan?",
+    "options": [
+      "C, A, B, D",
+      "A, B, C, D",
+      "D, B, A, C",
+      "C, B, A, D"
+    ],
+    "answer_index": 0,
+    "hint": "Mulai dari yang paling depan lalu susun ke belakang.",
+    "explanation": "C di depan A, A di depan B, dan D tepat di belakang B → urutan C, A, B, D.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L23",
+    "section": "logic",
+    "category": "susunan_posisi",
+    "question": "Empat anak (P, Q, R, S) berjajar. P di paling kiri, R di paling kanan, dan Q tepat di sebelah kanan P. Siapa yang berada di posisi ketiga dari kiri?",
+    "options": [
+      "P",
+      "Q",
+      "R",
+      "S"
+    ],
+    "answer_index": 3,
+    "hint": "Isi posisi yang sudah pasti dulu, lalu sisa posisi untuk yang tersisa.",
+    "explanation": "Posisi 1=P, 2=Q, 4=R, maka posisi 3 hanya bisa diisi S.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L24",
+    "section": "logic",
+    "category": "susunan_posisi",
+    "question": "Di rak buku berjejer: buku Sejarah di kiri buku Matematika. Buku Fisika di kanan buku Matematika. Buku Biologi di paling kanan. Urutan dari kiri ke kanan?",
+    "options": [
+      "Sejarah, Matematika, Fisika, Biologi",
+      "Matematika, Sejarah, Fisika, Biologi",
+      "Biologi, Fisika, Matematika, Sejarah",
+      "Sejarah, Fisika, Matematika, Biologi"
+    ],
+    "answer_index": 0,
+    "hint": "Tempatkan Biologi dulu di ujung kanan, lalu susun sisanya.",
+    "explanation": "Sejarah < Matematika < Fisika dan Biologi paling kanan → Sejarah, Matematika, Fisika, Biologi.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L25",
+    "section": "logic",
+    "category": "urutan_komparatif",
+    "question": "Andi lebih tinggi dari Budi. Budi lebih tinggi dari Citra. Doni lebih pendek dari Citra. Siapakah yang paling tinggi?",
+    "options": [
+      "Andi",
+      "Budi",
+      "Citra",
+      "Doni"
+    ],
+    "answer_index": 0,
+    "hint": "Susun semua orang dari yang tertinggi.",
+    "explanation": "Urutan tinggi: Andi > Budi > Citra > Doni. Yang tertinggi adalah Andi.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L26",
+    "section": "logic",
+    "category": "urutan_komparatif",
+    "question": "Rina lebih tua dari Sani. Tono lebih muda dari Sani. Umi lebih tua dari Rina. Siapakah yang paling muda?",
+    "options": [
+      "Umi",
+      "Rina",
+      "Sani",
+      "Tono"
+    ],
+    "answer_index": 3,
+    "hint": "Susun dari yang tertua ke termuda.",
+    "explanation": "Urutan usia: Umi > Rina > Sani > Tono. Yang paling muda adalah Tono.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L27",
+    "section": "logic",
+    "category": "urutan_komparatif",
+    "question": "Kotak A lebih berat dari B. C lebih ringan dari B. D lebih berat dari A. Urutkan dari yang paling ringan.",
+    "options": [
+      "C, B, A, D",
+      "D, A, B, C",
+      "A, B, C, D",
+      "B, C, A, D"
+    ],
+    "answer_index": 0,
+    "hint": "Tentukan dulu yang paling ringan dan paling berat.",
+    "explanation": "Berat: D > A > B > C. Dari paling ringan: C, B, A, D.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L28",
+    "section": "logic",
+    "category": "probabilitas",
+    "question": "Sebuah dadu dilempar satu kali. Berapa peluang muncul mata dadu genap?",
+    "options": [
+      "1/2",
+      "1/3",
+      "1/6",
+      "2/3"
+    ],
+    "answer_index": 0,
+    "hint": "Hitung berapa angka genap pada dadu dari total 6 sisi.",
+    "explanation": "Angka genap pada dadu: 2, 4, 6 (3 angka) dari 6 sisi → 3/6 = 1/2.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L29",
+    "section": "logic",
+    "category": "probabilitas",
+    "question": "Sebuah kantong berisi 3 bola merah dan 2 bola biru. Berapa peluang terambil bola merah?",
+    "options": [
+      "3/5",
+      "2/5",
+      "3/2",
+      "1/5"
+    ],
+    "answer_index": 0,
+    "hint": "Bola merah dibagi total seluruh bola.",
+    "explanation": "Total bola = 5, bola merah = 3 → peluang 3/5.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L30",
+    "section": "logic",
+    "category": "probabilitas",
+    "question": "Sebuah koin dilempar dua kali. Berapa peluang muncul angka pada kedua lemparan?",
+    "options": [
+      "1/2",
+      "1/4",
+      "1/3",
+      "3/4"
+    ],
+    "answer_index": 1,
+    "hint": "Peluang angka pada satu lemparan adalah 1/2; dua kejadian saling bebas.",
+    "explanation": "Peluang angka dua kali = 1/2 × 1/2 = 1/4.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L31",
+    "section": "logic",
+    "category": "soal_cerita",
+    "question": "Sebuah baju seharga Rp200.000 mendapat diskon 25%. Berapa harga yang harus dibayar?",
+    "options": [
+      "Rp150.000",
+      "Rp175.000",
+      "Rp50.000",
+      "Rp160.000"
+    ],
+    "answer_index": 0,
+    "hint": "Diskon 25% berarti membayar 75% dari harga awal.",
+    "explanation": "75% × Rp200.000 = Rp150.000.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L32",
+    "section": "logic",
+    "category": "soal_cerita",
+    "question": "Pekerja A menyelesaikan suatu tugas dalam 6 jam, pekerja B dalam 3 jam. Jika bekerja bersama, berapa jam tugas selesai?",
+    "options": [
+      "2 jam",
+      "3 jam",
+      "4 jam",
+      "1,5 jam"
+    ],
+    "answer_index": 0,
+    "hint": "Jumlahkan laju kerja per jam, lalu balik nilainya.",
+    "explanation": "Laju gabungan = 1/6 + 1/3 = 1/2 tugas per jam, jadi waktu = 2 jam.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L33",
+    "section": "logic",
+    "category": "soal_cerita",
+    "question": "Uang Ani dan Budi berbanding 3 : 5. Jika total uang mereka Rp80.000, berapa uang Budi?",
+    "options": [
+      "Rp50.000",
+      "Rp30.000",
+      "Rp48.000",
+      "Rp40.000"
+    ],
+    "answer_index": 0,
+    "hint": "Total perbandingan adalah 3 + 5 = 8 bagian.",
+    "explanation": "Uang Budi = 5/8 × Rp80.000 = Rp50.000.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L34",
+    "section": "logic",
+    "category": "spasial",
+    "question": "Pada sebuah dadu, jumlah titik pada dua sisi yang berhadapan selalu 7. Jika sisi atas menunjukkan 2, berapa titik pada sisi bawah?",
+    "options": [
+      "5",
+      "6",
+      "4",
+      "3"
+    ],
+    "answer_index": 0,
+    "hint": "Sisi atas + sisi bawah = 7.",
+    "explanation": "Sisi bawah = 7 − 2 = 5.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L35",
+    "section": "logic",
+    "category": "spasial",
+    "question": "Jika huruf kecil 'b' diputar 180 derajat, ia menyerupai huruf?",
+    "options": [
+      "p",
+      "q",
+      "d",
+      "b"
+    ],
+    "answer_index": 1,
+    "hint": "Putaran 180° membalik bentuk secara vertikal dan horizontal.",
+    "explanation": "Memutar 'b' 180° (atas-bawah dan kiri-kanan terbalik) menghasilkan bentuk 'q'.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L36",
+    "section": "logic",
+    "category": "spasial",
+    "question": "Sebuah kubus 3×3×3 dicat seluruh permukaannya lalu dipotong menjadi 27 kubus kecil. Berapa kubus kecil yang tidak terkena cat sama sekali?",
+    "options": [
+      "0",
+      "1",
+      "6",
+      "8"
+    ],
+    "answer_index": 1,
+    "hint": "Hanya kubus yang berada di bagian paling dalam yang tidak tercat.",
+    "explanation": "Hanya 1 kubus di pusat (tidak menyentuh permukaan luar) yang tidak terkena cat.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L37",
+    "section": "logic",
+    "category": "klasifikasi",
+    "question": "Manakah yang tidak termasuk kelompok? Mawar, Melati, Anggrek, Mangga",
+    "options": [
+      "Mawar",
+      "Melati",
+      "Anggrek",
+      "Mangga"
+    ],
+    "answer_index": 3,
+    "hint": "Tiga di antaranya adalah jenis bunga.",
+    "explanation": "Mawar, Melati, dan Anggrek adalah bunga, sedangkan Mangga adalah buah.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L38",
+    "section": "logic",
+    "category": "klasifikasi",
+    "question": "Manakah bilangan yang berbeda dari yang lain? 2, 3, 9, 11",
+    "options": [
+      "2",
+      "3",
+      "9",
+      "11"
+    ],
+    "answer_index": 2,
+    "hint": "Tiga di antaranya memiliki sifat yang sama dalam hal pembagi.",
+    "explanation": "2, 3, dan 11 adalah bilangan prima, sedangkan 9 bukan prima (9 = 3 × 3).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L39",
+    "section": "logic",
+    "category": "klasifikasi",
+    "question": "Manakah yang tidak satu kelompok? Singa, Harimau, Kucing, Elang",
+    "options": [
+      "Singa",
+      "Harimau",
+      "Kucing",
+      "Elang"
+    ],
+    "answer_index": 3,
+    "hint": "Tiga di antaranya termasuk keluarga kucing (Felidae).",
+    "explanation": "Singa, Harimau, dan Kucing termasuk keluarga kucing/mamalia, sedangkan Elang adalah burung.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L40",
+    "section": "logic",
+    "category": "jam",
+    "question": "Berapa besar sudut yang dibentuk jarum jam dan jarum menit pada pukul 03:00?",
+    "options": [
+      "90°",
+      "60°",
+      "120°",
+      "30°"
+    ],
+    "answer_index": 0,
+    "hint": "Setiap angka pada jam berjarak 30°.",
+    "explanation": "Pada pukul 03:00 jarum jam di angka 3, menit di angka 12 → 3 × 30° = 90°.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L41",
+    "section": "logic",
+    "category": "jam",
+    "question": "Berapa besar sudut terkecil antara kedua jarum jam pada pukul 06:00?",
+    "options": [
+      "150°",
+      "180°",
+      "90°",
+      "160°"
+    ],
+    "answer_index": 1,
+    "hint": "Jarum jam dan menit saling berseberangan lurus.",
+    "explanation": "Pukul 06:00 jarum jam di 6 dan menit di 12, saling berhadapan lurus → 180°.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "L42",
+    "section": "logic",
+    "category": "jam",
+    "question": "Berapa besar sudut antara jarum jam dan jarum menit pada pukul 03:30?",
+    "options": [
+      "75°",
+      "90°",
+      "72°",
+      "85°"
+    ],
+    "answer_index": 0,
+    "hint": "Jarum jam ikut bergerak setengah saat menit menunjuk 30. Jam bergerak 0,5° per menit.",
+    "explanation": "Jarum jam = 3×30 + 30×0,5 = 105°; jarum menit = 180°; selisih = 75°.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "L43",
+    "section": "logic",
+    "category": "logika_pernyataan",
+    "question": "Jika hujan turun maka jalanan basah. Ternyata jalanan tidak basah. Kesimpulan yang sah adalah?",
+    "options": [
+      "Hujan turun",
+      "Hujan tidak turun",
+      "Jalanan licin",
+      "Tidak dapat disimpulkan"
+    ],
+    "answer_index": 1,
+    "hint": "Gunakan modus tollens: jika akibat tidak terjadi, sebabnya juga tidak.",
+    "explanation": "Modus tollens: 'jika p maka q' dan 'tidak q' menghasilkan 'tidak p'. Jadi hujan tidak turun.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L44",
+    "section": "logic",
+    "category": "logika_pernyataan",
+    "question": "Negasi (ingkaran) dari pernyataan 'Semua siswa hadir' adalah?",
+    "options": [
+      "Semua siswa tidak hadir",
+      "Sebagian siswa tidak hadir",
+      "Tidak ada siswa yang hadir",
+      "Semua siswa hadir"
+    ],
+    "answer_index": 1,
+    "hint": "Negasi dari 'semua' adalah 'ada/sebagian yang tidak'.",
+    "explanation": "Ingkaran dari 'semua A' adalah 'sebagian/ada A yang tidak'. Jadi 'Sebagian siswa tidak hadir'.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "L45",
+    "section": "logic",
+    "category": "logika_pernyataan",
+    "question": "Pernyataan 'Jika p maka q' setara (ekuivalen) dengan?",
+    "options": [
+      "Jika q maka p",
+      "Jika tidak p maka tidak q",
+      "Jika tidak q maka tidak p",
+      "p dan q"
+    ],
+    "answer_index": 2,
+    "hint": "Bentuk yang ekuivalen disebut kontraposisi.",
+    "explanation": "Kontraposisi 'jika p maka q' adalah 'jika tidak q maka tidak p', dan keduanya selalu bernilai sama.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P01",
+    "section": "programming",
+    "category": "trace_aritmatika",
+    "question": "Apa keluaran (output) dari pseudocode berikut?",
+    "code": "x = 5\ny = 3\nprint(x * 2 + y)",
+    "options": [
+      "13",
+      "16",
+      "10",
+      "11"
+    ],
+    "answer_index": 0,
+    "hint": "Perkalian dikerjakan sebelum penjumlahan.",
+    "explanation": "x*2 = 10, lalu 10 + 3 = 13.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P02",
+    "section": "programming",
+    "category": "trace_aritmatika",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "a = 10\nb = 4\nprint(a - b * 2)",
+    "options": [
+      "12",
+      "2",
+      "8",
+      "6"
+    ],
+    "answer_index": 1,
+    "hint": "Kerjakan perkalian dulu sesuai urutan operasi.",
+    "explanation": "b*2 = 8, lalu 10 - 8 = 2.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P03",
+    "section": "programming",
+    "category": "loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "total = 0\nfor i in range(1, 5):\n    total += i\nprint(total)",
+    "options": [
+      "10",
+      "15",
+      "6",
+      "4"
+    ],
+    "answer_index": 0,
+    "hint": "range(1, 5) menghasilkan 1, 2, 3, 4.",
+    "explanation": "Menjumlahkan 1+2+3+4 = 10.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P04",
+    "section": "programming",
+    "category": "loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "s = 0\nfor i in range(2, 11, 2):\n    s += i\nprint(s)",
+    "options": [
+      "20",
+      "30",
+      "25",
+      "40"
+    ],
+    "answer_index": 1,
+    "hint": "Perhatikan langkah (step) 2: bilangan genap dari 2 sampai 10.",
+    "explanation": "Menjumlahkan 2+4+6+8+10 = 30.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P05",
+    "section": "programming",
+    "category": "nested_loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "c = 0\nfor i in range(3):\n    for j in range(2):\n        c += 1\nprint(c)",
+    "options": [
+      "5",
+      "6",
+      "3",
+      "2"
+    ],
+    "answer_index": 1,
+    "hint": "Loop dalam berjalan penuh untuk setiap iterasi loop luar.",
+    "explanation": "Loop luar 3 kali × loop dalam 2 kali = 6 kali penambahan.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P06",
+    "section": "programming",
+    "category": "nested_loop",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "r = ''\nfor i in range(1, 4):\n    for j in range(i):\n        r += '*'\nprint(r)",
+    "options": [
+      "******",
+      "***",
+      "*****",
+      "*"
+    ],
+    "answer_index": 0,
+    "hint": "Jumlah bintang per baris bertambah: 1, 2, 3.",
+    "explanation": "i=1 menambah 1, i=2 menambah 2, i=3 menambah 3 → total 6 bintang.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P07",
+    "section": "programming",
+    "category": "while",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "n = 10\nc = 0\nwhile n > 1:\n    n = n // 2\n    c += 1\nprint(c)",
+    "options": [
+      "3",
+      "4",
+      "2",
+      "5"
+    ],
+    "answer_index": 0,
+    "hint": "n dibagi dua (pembagian bulat) sampai tidak lebih besar dari 1.",
+    "explanation": "10→5→2→1, sebanyak 3 kali pembagian. Jadi c = 3.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P08",
+    "section": "programming",
+    "category": "while",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "x = 1\nwhile x < 50:\n    x = x * 3\nprint(x)",
+    "options": [
+      "81",
+      "27",
+      "54",
+      "243"
+    ],
+    "answer_index": 0,
+    "hint": "Loop berhenti saat x sudah tidak kurang dari 50.",
+    "explanation": "1→3→9→27→81. Saat x=81 syarat x<50 salah, jadi keluaran 81.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P09",
+    "section": "programming",
+    "category": "percabangan",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "n = 7\nif n % 2 == 0:\n    print('genap')\nelse:\n    print('ganjil')",
+    "options": [
+      "genap",
+      "ganjil",
+      "nol",
+      "error"
+    ],
+    "answer_index": 1,
+    "hint": "Sisa bagi 7 dengan 2 menentukan cabang yang dijalankan.",
+    "explanation": "7 % 2 = 1 (bukan 0), sehingga blok else dijalankan dan mencetak 'ganjil'.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P10",
+    "section": "programming",
+    "category": "percabangan",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "x = 15\nif x > 20:\n    print('A')\nelif x > 10:\n    print('B')\nelse:\n    print('C')",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "answer_index": 1,
+    "hint": "Periksa kondisi dari atas; yang pertama benar yang dijalankan.",
+    "explanation": "x=15 tidak > 20 tapi > 10, sehingga mencetak 'B'.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P11",
+    "section": "programming",
+    "category": "boolean",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "a = True\nb = False\nprint(a and not b)",
+    "options": [
+      "True",
+      "False",
+      "None",
+      "0"
+    ],
+    "answer_index": 0,
+    "hint": "Evaluasi 'not b' terlebih dahulu.",
+    "explanation": "not b = True, lalu True and True = True.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P12",
+    "section": "programming",
+    "category": "boolean",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "x = 5\ny = 10\nprint(x > 3 and y < 5)",
+    "options": [
+      "True",
+      "False",
+      "None",
+      "5"
+    ],
+    "answer_index": 1,
+    "hint": "Operator 'and' bernilai benar hanya jika kedua sisi benar.",
+    "explanation": "x>3 bernilai True, tetapi y<5 bernilai False, sehingga True and False = False.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P13",
+    "section": "programming",
+    "category": "pembagian_modulo",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "print(17 % 5)",
+    "options": [
+      "2",
+      "3",
+      "5",
+      "7"
+    ],
+    "answer_index": 0,
+    "hint": "Operator % menghasilkan sisa pembagian.",
+    "explanation": "17 dibagi 5 = 3 sisa 2, jadi 17 % 5 = 2.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P14",
+    "section": "programming",
+    "category": "pembagian_modulo",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "print(17 // 5)",
+    "options": [
+      "2",
+      "3",
+      "5",
+      "12"
+    ],
+    "answer_index": 1,
+    "hint": "Operator // adalah pembagian bulat (membuang sisa).",
+    "explanation": "17 // 5 = 3 (hasil pembagian bulat, sisa diabaikan).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P15",
+    "section": "programming",
+    "category": "array",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "a = [10, 20, 30, 40]\nprint(a[1] + a[3])",
+    "options": [
+      "50",
+      "60",
+      "30",
+      "70"
+    ],
+    "answer_index": 1,
+    "hint": "Indeks array dimulai dari 0.",
+    "explanation": "a[1] = 20 dan a[3] = 40, jadi 20 + 40 = 60.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P16",
+    "section": "programming",
+    "category": "array",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "a = [3, 1, 4, 1, 5]\nprint(len(a))",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "3"
+    ],
+    "answer_index": 1,
+    "hint": "len() menghitung jumlah elemen, termasuk yang nilainya sama.",
+    "explanation": "Array memiliki 5 elemen, jadi len(a) = 5.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P17",
+    "section": "programming",
+    "category": "string",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "s = 'APPLE'\nprint(s[1])",
+    "options": [
+      "A",
+      "P",
+      "L",
+      "E"
+    ],
+    "answer_index": 1,
+    "hint": "Indeks string dimulai dari 0.",
+    "explanation": "s[0]='A', s[1]='P', jadi keluarannya P.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P18",
+    "section": "programming",
+    "category": "string",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "s = 'developer'\nprint(s[:3])",
+    "options": [
+      "dev",
+      "eve",
+      "dve",
+      "dee"
+    ],
+    "answer_index": 0,
+    "hint": "Slicing [:3] mengambil karakter indeks 0, 1, dan 2.",
+    "explanation": "s[:3] mengambil tiga karakter pertama: 'dev'.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P19",
+    "section": "programming",
+    "category": "fungsi",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "def f(x):\n    return x * x + 1\nprint(f(3))",
+    "options": [
+      "9",
+      "10",
+      "7",
+      "16"
+    ],
+    "answer_index": 1,
+    "hint": "Substitusikan x = 3 ke dalam fungsi.",
+    "explanation": "f(3) = 3*3 + 1 = 9 + 1 = 10.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P20",
+    "section": "programming",
+    "category": "fungsi",
+    "question": "Apa keluaran dari pseudocode berikut?",
+    "code": "def g(a, b):\n    return a + b\nprint(g(2, g(3, 4)))",
+    "options": [
+      "9",
+      "7",
+      "14",
+      "5"
+    ],
+    "answer_index": 0,
+    "hint": "Evaluasi pemanggilan fungsi paling dalam terlebih dahulu.",
+    "explanation": "g(3,4)=7, lalu g(2,7)=9.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P21",
+    "section": "programming",
+    "category": "oop_class",
+    "question": "Dalam OOP, apa yang dimaksud dengan class?",
+    "options": [
+      "Cetak biru (blueprint) untuk membuat objek",
+      "Sebuah variabel global",
+      "Hasil eksekusi sebuah program",
+      "Sebuah perintah perulangan"
+    ],
+    "answer_index": 0,
+    "hint": "Class mendefinisikan struktur, bukan satu wujud nyata.",
+    "explanation": "Class adalah cetak biru/blueprint yang mendefinisikan atribut dan method untuk membuat objek.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P22",
+    "section": "programming",
+    "category": "oop_class",
+    "question": "Manakah pernyataan yang paling tepat tentang class?",
+    "options": [
+      "Class adalah instance dari object",
+      "Class mendefinisikan atribut dan method yang dimiliki objek",
+      "Class hanya bisa berisi data tanpa fungsi",
+      "Class tidak dapat digunakan kembali"
+    ],
+    "answer_index": 1,
+    "hint": "Pikirkan apa isi sebuah class.",
+    "explanation": "Class mendefinisikan atribut (data) dan method (perilaku) yang akan dimiliki oleh objek-objeknya.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P23",
+    "section": "programming",
+    "category": "oop_object",
+    "question": "Apa yang dimaksud dengan object dalam OOP?",
+    "options": [
+      "Instance (perwujudan) nyata dari sebuah class",
+      "Nama lain dari fungsi",
+      "Tipe data primitif",
+      "Sebuah file program"
+    ],
+    "answer_index": 0,
+    "hint": "Object lahir dari sebuah class.",
+    "explanation": "Object adalah instance/perwujudan nyata dari sebuah class yang memiliki nilai atribut tersendiri.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P24",
+    "section": "programming",
+    "category": "oop_object",
+    "question": "Jika 'Mobil' adalah sebuah class, maka 'mobil Budi yang berwarna merah' adalah?",
+    "options": [
+      "Sebuah class baru",
+      "Sebuah object",
+      "Sebuah method",
+      "Sebuah package"
+    ],
+    "answer_index": 1,
+    "hint": "Itu adalah satu wujud konkret dari class Mobil.",
+    "explanation": "'Mobil Budi yang berwarna merah' adalah object (instance) dari class Mobil.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P25",
+    "section": "programming",
+    "category": "oop_inheritance",
+    "question": "Apa yang dimaksud dengan inheritance (pewarisan)?",
+    "options": [
+      "Menyembunyikan data dari luar",
+      "Kemampuan sebuah class mewarisi atribut dan method dari class lain",
+      "Membuat banyak object sekaligus",
+      "Mengubah tipe data variabel"
+    ],
+    "answer_index": 1,
+    "hint": "Konsep ini berhubungan dengan hubungan parent-child antar class.",
+    "explanation": "Inheritance adalah kemampuan sebuah class (child) mewarisi atribut dan method dari class lain (parent).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "P26",
+    "section": "programming",
+    "category": "oop_inheritance",
+    "question": "Class 'Anjing' mewarisi dari class 'Hewan'. Pernyataan yang benar adalah?",
+    "options": [
+      "Anjing adalah superclass, Hewan adalah subclass",
+      "Hewan adalah parent class, Anjing adalah child class",
+      "Keduanya tidak berhubungan",
+      "Anjing tidak dapat memiliki method tambahan"
+    ],
+    "answer_index": 1,
+    "hint": "Yang diwarisi adalah parent; yang mewarisi adalah child.",
+    "explanation": "Karena Anjing mewarisi dari Hewan, maka Hewan adalah parent (superclass) dan Anjing adalah child (subclass).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P27",
+    "section": "programming",
+    "category": "oop_encapsulation",
+    "question": "Apa tujuan utama encapsulation (enkapsulasi)?",
+    "options": [
+      "Menyembunyikan detail internal dan mengontrol akses data melalui method",
+      "Membuat program berjalan lebih cepat",
+      "Menghapus semua variabel",
+      "Memperbanyak jumlah class"
+    ],
+    "answer_index": 0,
+    "hint": "Berkaitan dengan melindungi data internal sebuah objek.",
+    "explanation": "Enkapsulasi menyembunyikan detail/data internal objek dan mengatur aksesnya melalui method (getter/setter).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P28",
+    "section": "programming",
+    "category": "oop_encapsulation",
+    "question": "Dalam enkapsulasi, atribut yang sebaiknya tidak diakses langsung dari luar class diberi sifat?",
+    "options": [
+      "public",
+      "private",
+      "global",
+      "static"
+    ],
+    "answer_index": 1,
+    "hint": "Lawan dari 'public'.",
+    "explanation": "Atribut yang ingin disembunyikan dari luar class diberi sifat private.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P29",
+    "section": "programming",
+    "category": "oop_polymorphism",
+    "question": "Apa yang dimaksud dengan polymorphism?",
+    "options": [
+      "Satu nama method dapat berperilaku berbeda pada class yang berbeda",
+      "Menyalin seluruh isi class",
+      "Membuat variabel bersifat tetap",
+      "Menghapus method dari parent class"
+    ],
+    "answer_index": 0,
+    "hint": "Kata 'poly' berarti banyak bentuk.",
+    "explanation": "Polymorphism memungkinkan satu nama method memiliki perilaku berbeda tergantung class yang mengimplementasikannya.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "P30",
+    "section": "programming",
+    "category": "oop_polymorphism",
+    "question": "Method 'bersuara()' menghasilkan 'Guk' pada class Anjing dan 'Meong' pada class Kucing. Konsep ini disebut?",
+    "options": [
+      "Enkapsulasi",
+      "Polymorphism",
+      "Abstraksi data",
+      "Kompilasi"
+    ],
+    "answer_index": 1,
+    "hint": "Method bernama sama tetapi berperilaku berbeda.",
+    "explanation": "Method dengan nama sama yang berperilaku berbeda di tiap class adalah contoh polymorphism (method overriding).",
+    "difficulty": "medium"
+  }
+]/*QUESTIONS_END*/;
+
+/* ==================== KONFIGURASI SESI ==================== */
+const CFG = {
+  logicPerSession: 25,
+  programmingPerSession: 15,
+  maxPerCategory: 3,        // maksimum soal per kategori dalam satu sesi
+  durationSeconds: 60 * 60, // 60 menit
+};
+
+/* ==================== STATE (in-memory saja) ==================== */
+let session = null;       // { questions:[], answers:[], idx, ended }
+let timerId = null;
+let secondsLeft = CFG.durationSeconds;
+
+/* ==================== UTIL ==================== */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Ambil soal dengan batas maksimum per kategori.
+function pickWithQuota(pool, target, maxPerCat) {
+  const shuffled = shuffle(pool);
+  const counts = {};
+  const chosen = [];
+  for (const q of shuffled) {
+    if (chosen.length >= target) break;
+    const c = counts[q.category] || 0;
+    if (c < maxPerCat) { chosen.push(q); counts[q.category] = c + 1; }
+  }
+  // Jika belum cukup (kategori terlalu sedikit), longgarkan batas.
+  if (chosen.length < target) {
+    for (const q of shuffled) {
+      if (chosen.length >= target) break;
+      if (!chosen.includes(q)) chosen.push(q);
+    }
+  }
+  return chosen;
+}
+
+// Siapkan satu soal: acak opsi, simpan index jawaban benar yang baru.
+function prepareQuestion(q) {
+  const order = shuffle(q.options.map((_, i) => i));
+  const options = order.map(i => q.options[i]);
+  const answer_index = order.indexOf(q.answer_index);
+  return { ...q, options, answer_index };
+}
+
+function buildSession(mode) {
+  let questions;
+  if (mode === "all") {
+    const logic = QUESTIONS.filter(q => q.section === "logic");
+    const prog = QUESTIONS.filter(q => q.section === "programming");
+    questions = [
+      ...pickWithQuota(logic, CFG.logicPerSession, CFG.maxPerCategory),
+      ...pickWithQuota(prog, CFG.programmingPerSession, CFG.maxPerCategory),
+    ];
+  } else {
+    // mode fokus kategori
+    questions = shuffle(QUESTIONS.filter(q => q.category === mode));
+  }
+  questions = shuffle(questions).map(prepareQuestion);
+  return {
+    questions,
+    answers: new Array(questions.length).fill(null), // null = kosong
+    idx: 0,
+    ended: false,
+  };
+}
+
+/* ==================== TIMER ==================== */
+let paused = false;
+function runTicker() {
+  timerId = setInterval(() => {
+    secondsLeft--;
+    renderTimer();
+    if (secondsLeft <= 0) { stopTimer(); endSession(); }
+  }, 1000);
+}
+function startTimer() {
+  secondsLeft = CFG.durationSeconds;
+  paused = false;
+  renderTimer();
+  runTicker();
+}
+function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
+
+function setPaused(state) {
+  if (!session || session.ended) return;
+  paused = state;
+  const overlay = document.getElementById("pauseOverlay");
+  const btn = document.getElementById("pauseBtn");
+  if (paused) {
+    stopTimer();
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+    btn.textContent = "▶";
+    btn.title = "Lanjutkan (P)";
+    btn.setAttribute("aria-label", "Lanjutkan waktu");
+    document.getElementById("resumeBtn").focus();
+  } else {
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+    btn.textContent = "⏸";
+    btn.title = "Jeda (P)";
+    btn.setAttribute("aria-label", "Jeda waktu");
+    runTicker();
+  }
+}
+function togglePause() { setPaused(!paused); }
+function renderTimer() {
+  const el = document.getElementById("timer");
+  const m = Math.floor(Math.max(0, secondsLeft) / 60);
+  const s = Math.max(0, secondsLeft) % 60;
+  el.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  el.classList.toggle("warn", secondsLeft <= 300 && secondsLeft > 60);
+  el.classList.toggle("danger", secondsLeft <= 60);
+}
+
+/* ==================== SCORE PILLS ==================== */
+function liveCounts() {
+  let ok = 0, no = 0;
+  session.answers.forEach((a, i) => {
+    if (a === null) return;
+    if (a === session.questions[i].answer_index) ok++; else no++;
+  });
+  return { ok, no };
+}
+function renderScores() {
+  const { ok, no } = liveCounts();
+  document.getElementById("pillOk").textContent = `✓ ${ok}`;
+  document.getElementById("pillNo").textContent = `✕ ${no}`;
+}
+
+/* ==================== RENDER SOAL ==================== */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => (
+    {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]
+  ));
+}
+
+function renderQuestion() {
+  const q = session.questions[session.idx];
+  const answered = session.answers[session.idx];
+  const total = session.questions.length;
+
+  // progress
+  document.getElementById("progressFill").style.width = ((session.idx) / total * 100) + "%";
+  document.getElementById("progressLabel").textContent = `${session.idx + 1} / ${total}`;
+
+  const sectionLabel = q.section === "logic" ? "Logic" : "Programming";
+  const keys = ["A","B","C","D"];
+
+  let html = `
+    <div class="badges">
+      <span class="badge ${q.section}">${sectionLabel}</span>
+      <span class="badge">${escapeHtml(q.category.replace(/_/g," "))}</span>
+      <span class="badge">${escapeHtml(q.difficulty)}</span>
+    </div>
+    <h2 class="qtext">${escapeHtml(q.question)}</h2>
+  `;
+  if (q.code) html += `<pre class="code">${escapeHtml(q.code)}</pre>`;
+
+  html += `<div class="opts" role="group" aria-label="Pilihan jawaban">`;
+  q.options.forEach((opt, i) => {
+    let cls = "opt";
+    if (answered !== null) {
+      if (i === q.answer_index) cls += " correct";
+      else if (i === answered) cls += " wrong";
+    }
+    const dis = answered !== null ? "disabled" : "";
+    html += `<button class="${cls}" ${dis} data-i="${i}">
+        <span class="key">${keys[i]}</span><span>${escapeHtml(opt)}</span>
+      </button>`;
+  });
+  html += `</div>`;
+
+  // hint
+  html += `
+    <div>
+      <button class="hint-toggle" id="hintToggle" aria-expanded="false">💡 Lihat petunjuk</button>
+      <div class="hint-box" id="hintBox">${escapeHtml(q.hint)}</div>
+    </div>`;
+
+  // explanation (muncul setelah dijawab)
+  html += `
+    <div class="reveal ${answered !== null ? "show" : ""}" id="reveal">
+      <div class="explanation"><strong>Pembahasan:</strong> ${escapeHtml(q.explanation)}</div>
+    </div>`;
+
+  document.getElementById("card").innerHTML = html;
+
+  // listeners
+  document.querySelectorAll(".opt").forEach(btn => {
+    btn.addEventListener("click", () => selectOption(parseInt(btn.dataset.i, 10)));
+  });
+  const ht = document.getElementById("hintToggle");
+  ht.addEventListener("click", () => {
+    const box = document.getElementById("hintBox");
+    const open = box.classList.toggle("show");
+    ht.setAttribute("aria-expanded", String(open));
+    ht.textContent = open ? "💡 Sembunyikan petunjuk" : "💡 Lihat petunjuk";
+  });
+
+  // nav buttons
+  document.getElementById("prevBtn").disabled = session.idx === 0;
+  document.getElementById("nextBtn").textContent =
+    session.idx === total - 1 ? "Selesai ✓" : "Berikutnya ›";
+
+  renderScores();
+}
+
+function selectOption(i) {
+  if (session.answers[session.idx] !== null) return; // sudah dijawab
+  session.answers[session.idx] = i;
+  renderQuestion();
+}
+
+/* ==================== NAVIGASI ==================== */
+function goNext() {
+  if (session.idx < session.questions.length - 1) {
+    session.idx++;
+    renderQuestion();
+  } else {
+    endSession();
+  }
+}
+function goPrev() {
+  if (session.idx > 0) { session.idx--; renderQuestion(); }
+}
+
+/* ==================== HASIL ==================== */
+function endSession() {
+  if (session.ended) return;
+  session.ended = true;
+  stopTimer();
+  show("resultScreen");
+
+  let logicTotal = 0, logicOk = 0, progTotal = 0, progOk = 0, blank = 0;
+  session.questions.forEach((q, i) => {
+    const a = session.answers[i];
+    if (q.section === "logic") logicTotal++; else progTotal++;
+    if (a === null) { blank++; return; }
+    const correct = a === q.answer_index;
+    if (q.section === "logic") { if (correct) logicOk++; }
+    else { if (correct) progOk++; }
+  });
+  const totalOk = logicOk + progOk;
+  const total = session.questions.length;
+  const pct = Math.round(totalOk / total * 100);
+  const used = CFG.durationSeconds - Math.max(0, secondsLeft);
+  const mm = Math.floor(used / 60), ss = used % 60;
+
+  // ring
+  const r = 78, circ = 2 * Math.PI * r;
+  const ring = document.getElementById("ringFill");
+  ring.style.strokeDasharray = circ;
+  ring.style.strokeDashoffset = circ;
+  ring.style.stroke = pct >= 70 ? "var(--green)" : pct >= 50 ? "var(--yellow)" : "var(--red)";
+  requestAnimationFrame(() => { ring.style.strokeDashoffset = circ * (1 - pct / 100); });
+  document.getElementById("ringText").textContent = pct + "%";
+  document.getElementById("ringLabel").textContent = `${totalOk} / ${total} benar`;
+
+  document.getElementById("resultRows").innerHTML = `
+    <div class="rrow"><span>Logic Test</span><span class="v">${logicOk} / ${logicTotal}</span></div>
+    <div class="rrow"><span>Programming &amp; OOP</span><span class="v">${progOk} / ${progTotal}</span></div>
+    <div class="rrow"><span>Soal kosong</span><span class="v">${blank}</span></div>
+    <div class="rrow"><span>Waktu terpakai</span><span class="v">${String(mm).padStart(2,"0")}:${String(ss).padStart(2,"0")}</span></div>
+  `;
+}
+
+/* ==================== REVIEW ==================== */
+function renderReview() {
+  const keys = ["A","B","C","D"];
+  let html = "";
+  session.questions.forEach((q, i) => {
+    const a = session.answers[i];
+    let tag;
+    if (a === null) tag = `<span class="tag blank">Kosong</span>`;
+    else if (a === q.answer_index) tag = `<span class="tag ok">Benar</span>`;
+    else tag = `<span class="tag no">Salah</span>`;
+
+    let opts = "";
+    q.options.forEach((opt, j) => {
+      let cls = "opt";
+      if (j === q.answer_index) cls += " correct";
+      else if (j === a) cls += " wrong";
+      opts += `<button class="${cls}" disabled><span class="key">${keys[j]}</span><span>${escapeHtml(opt)}</span></button>`;
+    });
+
+    html += `<div class="card review-item">
+      <div class="badges">
+        <span class="badge ${q.section}">${q.section === "logic" ? "Logic" : "Programming"}</span>
+        <span class="badge">${escapeHtml(q.category.replace(/_/g," "))}</span>
+        ${tag}
+      </div>
+      <h3 class="qtext">${i+1}. ${escapeHtml(q.question)}</h3>
+      ${q.code ? `<pre class="code">${escapeHtml(q.code)}</pre>` : ""}
+      <div class="opts">${opts}</div>
+      <div class="reveal show"><div class="explanation"><strong>Pembahasan:</strong> ${escapeHtml(q.explanation)}</div></div>
+    </div>`;
+  });
+  document.getElementById("reviewList").innerHTML = html;
+}
+
+/* ==================== TAMPILAN ==================== */
+function show(screenId) {
+  ["startScreen","quizScreen","resultScreen","reviewScreen"].forEach(id => {
+    document.getElementById(id).classList.toggle("hidden", id !== screenId);
+  });
+  const inQuiz = screenId === "quizScreen";
+  document.getElementById("scores").style.visibility = inQuiz ? "visible" : "hidden";
+  document.getElementById("timer").style.visibility = inQuiz ? "visible" : "hidden";
+  document.getElementById("pauseBtn").style.visibility = inQuiz ? "visible" : "hidden";
+  if (!inQuiz) {
+    // keluar dari quiz: pastikan overlay jeda tertutup
+    paused = false;
+    const overlay = document.getElementById("pauseOverlay");
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+    document.getElementById("pauseBtn").textContent = "⏸";
+  }
+  window.scrollTo(0, 0);
+}
+
+function startSession() {
+  const mode = document.getElementById("modeSelect").value;
+  session = buildSession(mode);
+  if (session.questions.length === 0) { alert("Tidak ada soal untuk mode ini."); return; }
+  show("quizScreen");
+  startTimer();
+  renderQuestion();
+}
+
+/* ==================== INIT ==================== */
+function populateModes() {
+  const sel = document.getElementById("modeSelect");
+  const cats = [...new Set(QUESTIONS.map(q => q.category))].sort();
+  let html = `<option value="all">Tes Lengkap (25 Logic + 15 Programming)</option>`;
+  cats.forEach(c => {
+    const n = QUESTIONS.filter(q => q.category === c).length;
+    html += `<option value="${c}">Fokus: ${c.replace(/_/g," ")} (${n} soal)</option>`;
+  });
+  sel.innerHTML = html;
+  const logicN = Math.min(CFG.logicPerSession, QUESTIONS.filter(q=>q.section==="logic").length);
+  const progN = Math.min(CFG.programmingPerSession, QUESTIONS.filter(q=>q.section==="programming").length);
+  document.getElementById("metaCount").textContent = logicN + progN;
+}
+
+function init() {
+  if (!Array.isArray(QUESTIONS) || QUESTIONS.length === 0) {
+    document.querySelector(".wrap").innerHTML =
+      `<div class="center"><h1>Bank soal kosong</h1><p class="sub">Jalankan <code>python build.py</code> untuk menyuntik data/questions.json ke dalam index.html.</p></div>`;
+    return;
+  }
+  populateModes();
+  document.getElementById("startBtn").addEventListener("click", startSession);
+  document.getElementById("nextBtn").addEventListener("click", goNext);
+  document.getElementById("prevBtn").addEventListener("click", goPrev);
+  document.getElementById("retryBtn").addEventListener("click", () => show("startScreen"));
+  document.getElementById("retry2Btn").addEventListener("click", () => show("startScreen"));
+  document.getElementById("reviewBtn").addEventListener("click", () => { renderReview(); show("reviewScreen"); });
+  document.getElementById("backToResultBtn").addEventListener("click", () => show("resultScreen"));
+  document.getElementById("pauseBtn").addEventListener("click", togglePause);
+  document.getElementById("resumeBtn").addEventListener("click", () => setPaused(false));
+
+  // navigasi keyboard
+  document.addEventListener("keydown", (e) => {
+    if (document.getElementById("quizScreen").classList.contains("hidden")) return;
+    if (e.key === "p" || e.key === "P") { togglePause(); return; }
+    if (paused) return; // saat dijeda, abaikan navigasi & pilihan
+    if (e.key === "ArrowRight") goNext();
+    else if (e.key === "ArrowLeft") goPrev();
+    else if (["1","2","3","4"].includes(e.key)) {
+      const i = parseInt(e.key,10) - 1;
+      const btn = document.querySelector(`.opt[data-i="${i}"]`);
+      if (btn && !btn.disabled) btn.click();
+    }
+  });
+
+  show("startScreen");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
